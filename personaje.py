@@ -15,7 +15,16 @@ class Personaje:
         self.en_movimiento = False
         self.atacando = False
 
-    def movimiento(self, delta_x, delta_y, ancho_mapa, alto_mapa):
+    def verif_colision(personaje, delta_x, delta_y):
+        nueva_x = personaje.forma.x + delta_x
+        nueva_y = personaje.forma.y + delta_y
+        personaje_rect = pygame.Rect(nueva_x, personaje.forma.y, personaje.forma.width, personaje.forma.height)
+        for rect in colis_rectangulos:
+            if personaje_rect.colliderect(rect):
+                return True
+        return False
+    
+    def movimiento(self, delta_x, delta_y, ancho_mapa, alto_mapa, colis_rectangulos):
         """ Mueve al jugador dentro de los límites del mapa """
         if self.atacando:
             return
@@ -29,11 +38,20 @@ class Personaje:
         nueva_x = self.forma.x + delta_x
         nueva_y = self.forma.y + delta_y
 
-        # Verifica que el nuevo movimiento no saque al personaje del mapa
-        if 0 <= nueva_x <= ancho_mapa * constantes.TILE_SIZE - constantes.ANCHO_PERSONAJE:
-            self.forma.x = nueva_x
-        if 0 <= nueva_y <= alto_mapa * constantes.TILE_SIZE - constantes.ALTO_PERSONAJE:
-            self.forma.y = nueva_y
+        personaje_rect_x = pygame.Rect(nueva_x, self.forma.y, self.forma.width, self.forma.height)
+        colision_x = any(personaje_rect_x.colliderect(rect) for rect in colis_rectangulos)
+
+        if not colision_x:
+            if 0 <= nueva_x <= ancho_mapa * constantes.TILE_SIZE - constantes.ANCHO_PERSONAJE:
+                self.forma.x = nueva_x
+                
+        nueva_y = self.forma.y + delta_y
+        personaje_rect_y = pygame.Rect(self.forma.x, nueva_y, self.forma.width, self.forma.height)
+        colision_y = any(personaje_rect_y.colliderect(rect) for rect in colis_rectangulos)
+
+        if not colision_y:
+            if 0 <= nueva_y <= alto_mapa * constantes.TILE_SIZE - constantes.ALTO_PERSONAJE:
+                self.forma.y = nueva_y
 
         self.en_movimiento = delta_x != 0 or delta_y != 0
 

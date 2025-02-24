@@ -14,7 +14,7 @@ ANCHO_PERSONAJE = 48
 
 # Configuración del juego
 FPS = 60
-VELOCIDAD = 3
+VELOCIDAD = 2.4
 SCALA_PERSONAJE = 1
 
 # Tamaño de los tiles en el mapa

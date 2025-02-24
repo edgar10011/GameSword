@@ -13,6 +13,7 @@ pg.display.set_caption("Excalibur")
 
 # Cargar el mapa TMX
 tmx_data = pytmx.load_pygame('assets/imagenes/mundos/mapa.tmx')
+colis_rectangulos = []
 
 # Función para dibujar el mapa
 def dibujar_mapa(ventana, camara):
@@ -22,6 +23,12 @@ def dibujar_mapa(ventana, camara):
                 tile_image = tmx_data.get_tile_image_by_gid(tile)
                 if tile_image:
                     ventana.blit(tile_image, camara.aplicar((x * constantes.TILE_SIZE, y * constantes.TILE_SIZE)))
+
+for grupos in tmx_data.layers:
+    if isinstance(grupos, pytmx.TiledObjectGroup):
+        for obj in grupos:
+            if obj.collision == 'true':
+                colis_rectangulos.append(pg.Rect(obj.x, obj.y, obj.width, obj.height))
 
 # Función para escalar imágenes
 def escalar_img(image, scale):
@@ -67,7 +74,7 @@ while run:
     delta_y = (constantes.VELOCIDAD if mover_abajo else 0) - (constantes.VELOCIDAD if mover_arriba else 0)
 
     # Mover el personaje con límites del mapa
-    jugador.movimiento(delta_x, delta_y, constantes.MAP_WIDTH, constantes.MAP_HEIGHT)
+    jugador.movimiento(delta_x, delta_y, constantes.MAP_WIDTH, constantes.MAP_HEIGHT, colis_rectangulos)
     jugador.actualizar_animacion()
 
     # Dibujar al jugador con la cámara aplicada
@@ -135,6 +142,11 @@ while run:
             elif event.button == 9:
                 print("Soltado 9")
                 
+    keys = pg.key.get_pressed()
+    if keys[pg.K_LEFT]: mover_izquierda = True
+    if keys[pg.K_RIGHT]: mover_derecha = True
+    if keys[pg.K_UP]: mover_arriba = True
+    if keys[pg.K_DOWN]: mover_abajo = True
 
     #Eventos de Joystick
     if joystick:
