@@ -3,7 +3,7 @@ name: Pipeline
 on:
   push:
     branches:
-      - main  # Se ejecuta cuando haces push a la rama principal
+      - main  # S ejecuta cuando haces push a la rama principal
 
 jobs:
   setup:
