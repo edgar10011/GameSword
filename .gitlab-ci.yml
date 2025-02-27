@@ -1,0 +1,37 @@
+stages:
+  - setup
+  - test
+  - deploy
+
+# Etapa para configurar el entorno de liberación
+setup_environment:
+  stage: setup
+  script:
+    - python -m venv venv
+    - source venv/bin/activate  # En Linux/Mac
+    - venv\Scripts\activate     # En Windows
+    - pip install -r requirements.txt
+
+# Etapa para ejecutar las pruebas
+test_game:
+  stage: test
+  script:
+    - echo "Ejecutando pruebas..."
+    - source venv/bin/activate  # Activar el entorno virtual (Linux/Mac)
+    - venv\Scripts\activate     # Activar el entorno virtual (Windows)
+    - pytest tests/ --junitxml=report.xml
+  artifacts:
+    reports:
+      junit: report.xml
+
+# Etapa para empaquetar y desplegar el juego con pyinstaller
+deploy_game:
+  stage: deploy
+  script:
+    - source venv/bin/activate  # Activar el entorno virtual (Linux/Mac)
+    - venv\Scripts\activate     # Activar el entorno virtual (Windows)
+    - pyinstaller --onefile --distpath dist/ --workpath build/ --specpath . game.py
+    - echo "Juego desplegado en dist/"
+  artifacts:
+    paths:
+      - dist/

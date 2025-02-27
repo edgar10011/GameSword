@@ -1,6 +1,6 @@
 import pygame as pg
 import pytmx
-import constantes
+import constantes as constantes
 from personaje import Personaje
 from camara import Camara
 
