@@ -1,9 +1,9 @@
 import pygame
-import constantes
+import constantes as constantes
 
 class Camara:
     def __init__(self, ancho_mapa, alto_mapa):
-        # Tamaño total del mapa en píxeles
+        # Tamaño total del mapa en pcleíxeles
         self.ancho_mapa = ancho_mapa * constantes.TILE_SIZE  # Ancho total del mapa
         self.alto_mapa = alto_mapa * constantes.TILE_SIZE  # Alto total del mapa
         self.x = 0
