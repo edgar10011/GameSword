@@ -1,0 +1,56 @@
+name: Pipeline
+
+on:
+  push:
+    branches:
+      - main  # Se ejecuta cuando haces push a la rama principal
+
+jobs:
+  setup:
+    runs-on: ubuntu-latest  # Esto se puede cambiar a windows-latest si usas Windows
+    steps:
+      - name: Chequear el repositorio
+        uses: actions/checkout@v2
+        
+      - name: Configurar el entorno de liberación
+        run: |
+          python -m venv venv
+          source venv/bin/activate  # Activar el entorno virtual en Linux/Mac
+          pip install -r requirements.txt
+
+  test:
+    runs-on: ubuntu-latest  # Usa el mismo sistema que el job anterior
+    needs: setup  # Dependencia del job anterior
+    steps:
+      - name: Chequear el repositorio
+        uses: actions/checkout@v2
+        
+      - name: Ejecutar pruebas
+        run: |
+          source venv/bin/activate  # Activar el entorno virtual
+          pytest tests/ --junitxml=report.xml
+          
+      - name: Subir artefactos de prueba
+        uses: actions/upload-artifact@v2
+        with:
+          name: test-report
+          path: report.xml
+
+  deploy:
+    runs-on: ubuntu-latest  # Usa el mismo sistema que el job anterior
+    needs: test  # Depende de las pruebas exitosas
+    steps:
+      - name: Chequear el repositorio
+        uses: actions/checkout@v2
+        
+      - name: Empaquetar el juego
+        run: |
+          source venv/bin/activate  # Activar el entorno virtual
+          pyinstaller --onefile --distpath dist/ --workpath build/ --specpath . game.py
+          echo "Juego desplegado en dist/"
+        
+      - name: Subir artefactos de despliegue
+        uses: actions/upload-artifact@v2
+        with:
+          name: dist
+          path: dist/
